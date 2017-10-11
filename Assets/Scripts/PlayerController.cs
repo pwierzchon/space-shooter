@@ -10,24 +10,31 @@ public class Boundary {
 	public float zMax;
 }
 
+[System.Serializable]
+public class Shoots{
+	public GameObject shoot;
+	public Transform shootSpawn;
+
+	public float nextFire = 0.0f;
+	public float fireRate = 0.0f;
+
+
+}
+
 public class PlayerController : MonoBehaviour {
 
 	public float speed;
 	public float tilt;
 	public Boundary boundary;
+	public Shoots shoots;
+	private float previousRate = 0.0f;
+	private bool speedUp = false;
+	float endSpeedUp = 0.0f;
 
-	public GameObject shoot;
-	public Transform shootSpawn;
-
-	private float nextFire = 0.0f;
-	public float fireRate = 0.0f;
 
 	void Update(){
-		if (Input.GetButton ("Fire1") && Time.time > nextFire) {
-			nextFire = Time.time + fireRate;
-			GameObject clone = Instantiate (shoot, shootSpawn.position, shootSpawn.rotation) as GameObject;
-			GetComponent<AudioSource>().Play();
-		}
+		Fire ();
+		CheckPowerUps ();
 	}
 
 	void FixedUpdate(){
@@ -45,6 +52,31 @@ public class PlayerController : MonoBehaviour {
 		);
 
 		GetComponent<Rigidbody> ().rotation = Quaternion.Euler (0.0f,0.0f,GetComponent<Rigidbody> ().velocity.x * -tilt);
+	}
+
+    void Fire(){
+		if (Input.GetButton ("Fire1") && Time.time > shoots.nextFire) {
+			shoots.nextFire = Time.time + shoots.fireRate;
+			GameObject clone = Instantiate (shoots.shoot, shoots.shootSpawn.position, shoots.shootSpawn.rotation) as GameObject;
+			GetComponent<AudioSource>().Play();
+		}
+	}
+
+	public void SpeedUp(float factor, float duration){
+		previousRate = shoots.fireRate;
+		speedUp = true;
+		shoots.fireRate = factor;
+		endSpeedUp = Time.time + duration;
+	}
+
+	void CheckPowerUps ()
+	{
+		if(speedUp){
+			if(Time.time > endSpeedUp){
+				shoots.fireRate = previousRate;
+				speedUp = false;
+			}
+		}
 	}
 
 }

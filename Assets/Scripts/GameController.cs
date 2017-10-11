@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
 
 	public GameObject hazard;
+	public GameObject powerUp;
 	public Vector3 spawnValues;
 	public int hazardCount;
 	public float spawnWait;
@@ -47,6 +48,7 @@ public class GameController : MonoBehaviour {
 		        Quaternion spawnRotation = Quaternion.identity;
 
          		GameObject hazardClone = Instantiate (hazard, spawnPosition, spawnRotation) as GameObject;
+				SpawnPowerUp ();
 	    		yield return new WaitForSeconds (spawnWait);
 		    }
 			if(gameOver){
@@ -71,4 +73,16 @@ public class GameController : MonoBehaviour {
 		gameOver = true;
 	}
 
+	void SpawnPowerUp ()
+	{
+		float rand = Random.Range (0.0f, 20.0f);
+
+		Debug.Log ("rand: "+rand.ToString());
+		if(rand>19.555f){
+			Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x,spawnValues.x),0.0f, spawnValues.z);
+			Quaternion spawnRotation = Quaternion.identity;
+
+			GameObject powerClone = Instantiate (powerUp, spawnPosition, spawnRotation) as GameObject;
+		}
+	}
 }
